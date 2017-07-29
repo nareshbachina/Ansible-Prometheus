@@ -1,0 +1,4 @@
+- hosts: localhost
+  roles:
+     - { role: prometheus, exporter_name: node_exporter }
+
