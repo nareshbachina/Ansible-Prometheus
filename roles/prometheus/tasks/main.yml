@@ -1,0 +1,9 @@
+
+- name: Install daemonize package
+  yum:
+    name: daemonize.x86_64
+    state: latest
+  when: ansible_service_mgr == 'upstart'
+
+- include: prometheus_node_exporter.yml
+  when: exporter_name == 'node_exporter'
