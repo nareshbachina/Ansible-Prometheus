@@ -1,0 +1,79 @@
+---
+- include_vars:
+    file: "{{ item }}"
+  with_items:
+    - prometheus_node_exporter.yml
+
+- name: Define a variable 
+  set_fact:
+    prometheus_node_exporter_service_name: "node_exporter"
+  when: ansible_service_mgr == 'upstart'
+
+- name: Define a variable
+  set_fact:
+    prometheus_node_exporter_service_name: "node_exporter.service"
+  when: ansible_service_mgr == 'systemd'
+
+- name: Check if the prometheus node exporter directory exists
+  stat:
+    path: "{{ prometheus_exporters_location }}/{{ prometheus_node_exporter_folder_name }}"
+  register: directory_result
+
+- name: Download the prometheus node exporter archive
+  get_url:
+    url: "{{ prometheus_node_exporter_download_url }}"
+    dest: "{{ prometheus_exporters_location }}"
+  when: directory_result.stat.exists == False
+
+- name: Extract the prometheus node exporter archive
+  unarchive:
+    copy: no
+    src: "{{ prometheus_exporters_location }}/{{ prometheus_node_exporter_folder_name }}.tar.gz"
+    dest: "{{ prometheus_exporters_location }}"
+    creates: "{{prometheus_exporters_location }}/{{ prometheus_node_exporter_folder_name }}"
+  register: prometheus_node_exporter_changed
+  when: directory_result.stat.exists == False
+  notify:
+    - restart prometheus node exporter
+
+- name: Create systemd service unit for prometheus node exporter
+  template:
+    src: "etc/systemd/system/prometheus-node-exporter.service.j2"
+    dest: "/etc/systemd/system/{{ prometheus_node_exporter_service_name }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: ansible_service_mgr == 'systemd'
+  notify:
+    - service reenable
+    - restart prometheus node exporter
+
+
+- name: Create upstart service unit for prometheus node exporter
+  template:
+    src: "etc/init.d/prometheus-node-exporter.service.j2"
+    dest: "/etc/init.d/{{ prometheus_node_exporter_service_name }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: ansible_service_mgr == 'upstart'
+  notify:
+    - restart prometheus node exporter
+
+- name: Ensure prometheus node exporter service is enabled and started
+  service:
+    name: "{{ prometheus_node_exporter_service_name }}"
+    state: "started"
+    enabled: "yes"
+
+- name: Check if the prometheus node exporter archive exists
+  stat:
+    path: "{{ prometheus_exporters_location }}/{{ prometheus_node_exporter_folder_name }}.tar.gz"
+  register: archive_result
+
+- name: Delete the prometheus node exporter archive
+  file:
+    path: "{{ prometheus_exporters_location }}/{{ prometheus_node_exporter_folder_name }}.tar.gz"
+    state: "absent"
+  when: archive_result.stat.exists == True
+
