@@ -1,4 +1,6 @@
-- hosts: localhost
+- hosts: app_servers
   roles:
-     - { role: limits, servertype: normal }
-#     - { role: limits, servertype: db }
+     - { role: limits, servertype: app }
+- hosts: db_servers
+  roles:
+     - { role: limits, servertype: db }
