@@ -1,0 +1,4 @@
+- hosts: localhost
+  roles:
+     - { role: limits, servertype: normal }
+#     - { role: limits, servertype: db }

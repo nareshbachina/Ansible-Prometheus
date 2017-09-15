@@ -1,0 +1,12 @@
+---
+- include_vars:
+    file: "{{ servertype }}.yml"
+
+- name: Generate security limits configuration file
+  template:
+    src: limits.conf.j2
+    dest: /tmp/limits.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: true

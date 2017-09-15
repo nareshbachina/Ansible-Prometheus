@@ -1,0 +1,3 @@
+{% for limit in limit_rules %}
+{{ limit.domain }}  {{ limit.limit_type }}  {{ limit.limit_item }} {{ limit.value }}
+{% endfor %}
