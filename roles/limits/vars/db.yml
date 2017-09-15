@@ -1,0 +1,14 @@
+---
+limit_rules:
+  - {
+      domain: joe,
+      limit_type: soft,
+      limit_item: nofile,
+      value: 64000
+    }
+  - {
+      domain: smith,
+      limit_type: hard,
+      limit_item: fsize,
+      value: 1000000
+    }
