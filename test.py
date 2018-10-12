@@ -4,3 +4,4 @@ environment_variables = os.environ
 
 for environment_variable in environment_variables:
   print(environment_variable)
+print(environment_variables['GIT_URL'])
