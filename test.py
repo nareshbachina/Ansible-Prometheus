@@ -8,6 +8,9 @@ for environment_variable in environment_variables:
 print(number_of_repositories)
 initial=""
 for i in range(0,number_of_repositories):
-  print(environment_variables['GIT_URL'+str(initial)])
+  if i==0:
+    print(environment_variables['GIT_URL'])
+  else:
+    print(environment_variables['GIT_URL'+str(initial)])
   initial=i
  
