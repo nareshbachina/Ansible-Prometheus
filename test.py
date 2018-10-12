@@ -12,5 +12,5 @@ for i in range(0,number_of_repositories):
     print(environment_variables['GIT_URL'])
   else:
     print(environment_variables['GIT_URL_'+str(initial)])
-  initial=i
+  initial=i+1
  
